@@ -1,5 +1,6 @@
-package com.bluesky.player;
+package com.bluesky.player.auth;
 
+import com.bluesky.player.database.entity.account.Account;
 import com.bluesky.player.util.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -9,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.crypto.SecretKey;
@@ -42,8 +42,8 @@ public class JwtUtilTest {
     void generateToken_WithExtraClaims_ShouldGenerateValidToken() {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("id", 123);
-        UserDetails userDetails = mock(UserDetails.class);
-        when(userDetails.getUsername()).thenReturn(testEmail);
+        Account userDetails = mock(Account.class);
+        when(userDetails.getEmail()).thenReturn(testEmail);
 
         String token = jwtUtil.generateToken(extraClaims, userDetails);
 

@@ -1,11 +1,11 @@
 package com.bluesky.player.util.jwt;
 
+import com.bluesky.player.database.entity.account.Account;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -37,18 +37,18 @@ public class JwtUtil {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public String generateToken(Map<String, Object> extraClaims, Account account) {
         return Jwts.builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(account.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(getSigningKey())
                 .compact();
     }
-    public boolean isTokenValid(String token, UserDetails userDetails) {
+    public boolean isTokenValid(String token, Account account) {
         final String email = extractAccountEmail(token);
-        return (email.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return (email.equals(account.getEmail())) && !isTokenExpired(token);
     }
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
